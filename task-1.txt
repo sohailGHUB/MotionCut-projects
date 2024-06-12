@@ -1,0 +1,166 @@
+import random
+import time
+import sys
+
+class QuizGame:
+    def __init__(self):
+        self.questions = self.get_quiz_questions()
+        self.score = 0
+        self.incorrect_answers = []
+        self.high_scores = []
+
+    def get_quiz_questions(self):
+        """
+        Returns a list of dictionaries, where each dictionary represents a quiz question with options and the correct answer.
+        """
+        return [
+            {
+                "question": "What is the largest planet in our solar system?",
+                "options": ["Earth", "Jupiter", "Saturn", "Neptune"],
+                "correct_answer": "Jupiter"
+            },
+            {
+                "question": "Who painted the Mona Lisa?",
+                "options": ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+                "correct_answer": "Leonardo da Vinci"
+            },
+            {
+                "question": "What is the chemical symbol for gold?",
+                "options": ["Au", "Ag", "Pt", "Hg"],
+                "correct_answer": "Au"
+            },
+            {
+                "question": "Which element has the atomic number 1?",
+                "options": ["Helium", "Oxygen", "Hydrogen", "Nitrogen"],
+                "correct_answer": "Hydrogen"
+            },
+            {
+                "question": "What is the smallest country in the world?",
+                "options": ["Monaco", "Vatican City", "San Marino", "Liechtenstein"],
+                "correct_answer": "Vatican City"
+            }
+        ]
+
+    def shuffle_questions_and_options(self):
+        """
+        Shuffles the questions and their options.
+        """
+        random.shuffle(self.questions)
+        for question in self.questions:
+            options = question["options"]
+            correct_answer = question["correct_answer"]
+            random.shuffle(options)
+            question["options"] = options
+            question["correct_answer"] = correct_answer  # keep the correct answer value unchanged
+
+    def typewriter_effect(self, text, delay=0.05):
+        """
+        Prints text with a typewriter effect.
+        """
+        for char in text:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+            time.sleep(delay)
+        print()
+
+    def ask_question(self, question):
+        """
+        Asks a single question to the user and returns whether the answer was correct or not.
+        Provides feedback and shows the correct answer if the user is wrong.
+        """
+        self.typewriter_effect("\n" + question["question"])
+        options = question["options"]
+        correct_answer = question["correct_answer"]
+
+        for idx, option in enumerate(options):
+            print(f"{chr(65 + idx)}) {option}")
+
+        answer = input("Please enter the letter of your answer: ").strip().upper()
+        while answer not in [chr(65 + i) for i in range(len(options))]:
+            print("Invalid input. Please enter a valid option.")
+            answer = input("Please enter the letter of your answer: ").strip().upper()
+
+        selected_option = options[ord(answer) - 65]
+        if selected_option == correct_answer:
+            self.typewriter_effect("Correct!\n")
+            return True
+        else:
+            self.typewriter_effect(
+                f"Incorrect. The correct answer is {correct_answer}.\n")
+            self.incorrect_answers.append(question)
+            return False
+
+    def display_final_score(self):
+        """
+        Displays the user's final score and incorrect answers.
+        """
+        self.typewriter_effect(f"Your final score is {self.score}/{len(self.questions)}.")
+        if self.incorrect_answers:
+            self.typewriter_effect("\nYou got the following questions wrong:")
+            for question in self.incorrect_answers:
+                correct_answer = question["correct_answer"]
+                self.typewriter_effect(f"- {question['question']} (Correct answer: {correct_answer})")
+
+    def save_high_score(self, user_name):
+        """
+        Saves the user's high score.
+        """
+        self.high_scores.append((user_name, self.score))
+        self.high_scores.sort(key=lambda x: x[1], reverse=True)
+        self.typewriter_effect("\nHigh Scores:")
+        for name, score in self.high_scores:
+            self.typewriter_effect(f"{name}: {score}")
+
+    def run_quiz(self):
+        """
+        Runs the quiz by asking each question and keeping track of the score.
+        Displays the final score at the end of the quiz.
+        """
+        self.shuffle_questions_and_options()
+        display_instructions()
+        user_name = input("Enter your name: ")
+        self.score = 0
+        self.incorrect_answers = []
+
+        for question in self.questions:
+            if self.ask_question(question):
+                self.score += 1
+
+        self.display_final_score()
+        self.save_high_score(user_name)
+
+
+def display_instructions():
+    print("How to Play")
+    print()
+    print("    Start the Game:")
+    print("        When you start the game, you will be prompted to enter your name. This will be used to save your high score.")
+    print()
+    print("    Answering Questions:")
+    print("        You will be asked a series of questions one by one.")
+    print("        Each question will have four options labeled A, B, C, and D.")
+    print("        To answer a question, type the letter corresponding to your chosen option (e.g., A, B, C, or D) and press Enter.")
+    print()
+    print("    Feedback:")
+    print("        After you answer a question, you will be informed whether your answer was correct or incorrect.")
+    print("        If your answer is incorrect, the correct answer will be displayed.")
+    print()
+    print("    Score:")
+    print("        Your score will be updated based on the number of correct answers.")
+    print("        At the end of the quiz, your final score will be displayed along with the questions you got wrong and their correct answers.")
+    print()
+    print("    High Scores:")
+    print("        Your score will be saved and compared with previous high scores.")
+    print("        A list of high scores will be displayed at the end of the quiz.")
+    print()
+    print("Tips")
+    print()
+    print("    Read each question carefully.")
+    print("    Keep track of your progress and try to improve your high score with each attempt.")
+    print()
+    print("Enjoy the game and test your knowledge!")
+
+# Entry point of the program
+if __name__ == "__main__":
+    game = QuizGame()
+    game.run_quiz()
