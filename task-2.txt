@@ -1,0 +1,117 @@
+import string
+from collections import Counter
+
+
+def count_words(text):
+    """
+    Counts the number of words in a given text.
+
+    :param text: str, input text from the user
+    :return: int, word count
+    """
+    text = text.strip()
+    words = text.split()
+    return len(words)
+
+
+def count_sentences(text):
+    """
+    Counts the number of sentences in a given text.
+
+    :param text: str, input text from the user
+    :return: int, sentence count
+    """
+    sentences = text.split('.')
+    sentences = [s for s in sentences if s.strip() != '']
+    return len(sentences)
+
+
+def count_paragraphs(text):
+    """
+    Counts the number of paragraphs in a given text.
+
+    :param text: str, input text from the user
+    :return: int, paragraph count
+    """
+    paragraphs = text.split('\n')
+    paragraphs = [p for p in paragraphs if p.strip() != '']
+    return len(paragraphs)
+
+
+def count_characters(text):
+    """
+    Counts the number of characters in a given text, with and without spaces.
+
+    :param text: str, input text from the user
+    :return: tuple, (character count with spaces, character count without spaces)
+    """
+    char_with_spaces = len(text)
+    char_without_spaces = len(text.replace(" ", "").replace("\n", ""))
+    return char_with_spaces, char_without_spaces
+
+
+def most_common_word(text):
+    """
+    Finds the most common word in a given text.
+
+    :param text: str, input text from the user
+    :return: str, most common word
+    """
+    words = text.split()
+    words = [word.strip(string.punctuation).lower() for word in words]
+    word_counts = Counter(words)
+    most_common = word_counts.most_common(1)
+    return most_common[0][0] if most_common else None
+
+
+def unique_words_count(text):
+    """
+    Counts the number of unique words and displays the frequency of each word.
+
+    :param text: str, input text from the user
+    :return: dict, frequency of each unique word
+    """
+    words = text.split()
+    words = [word.strip(string.punctuation).lower() for word in words]
+    word_counts = Counter(words)
+    return word_counts
+
+
+def main():
+    """
+    Main function to handle user input and display the word count.
+    """
+    print("Please enter a sentence or paragraph (end input with an empty line):")
+    lines = []
+    while True:
+        line = input()
+        if line.strip() == '':
+            break
+        lines.append(line)
+    user_input = "\n".join(lines)
+
+    if not user_input.strip():
+        print("Error: Input cannot be empty. Please enter some text.")
+        return
+
+    word_count = count_words(user_input)
+    sentence_count = count_sentences(user_input)
+    paragraph_count = count_paragraphs(user_input)
+    char_with_spaces, char_without_spaces = count_characters(user_input)
+    common_word = most_common_word(user_input)
+    unique_words = unique_words_count(user_input)
+
+    print(f"Word Count: {word_count}")
+    print(f"Sentence Count: {sentence_count}")
+    print(f"Paragraph Count: {paragraph_count}")
+    print(f"Character Count (with spaces): {char_with_spaces}")
+    print(f"Character Count (without spaces): {char_without_spaces}")
+    print(f"Most Common Word: {common_word}")
+    print(f"Unique Words Count: {len(unique_words)}")
+    print("Frequency of Each Unique Word:")
+    for word, freq in unique_words.items():
+        print(f"{word}: {freq}")
+
+
+if __name__ == "__main__":
+    main()
